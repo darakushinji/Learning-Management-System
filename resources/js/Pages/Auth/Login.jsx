@@ -113,7 +113,7 @@ export default function Login({ status, canResetPassword }) {
 
                         <div className="flex items-center justify-center gap-2">
                             <h1>Don't have an account?</h1>
-                            <h1>
+                            {/* <h1>
                                 {" "}
                                 <Link
                                     href={route("register")}
@@ -121,7 +121,7 @@ export default function Login({ status, canResetPassword }) {
                                 >
                                     Register here
                                 </Link>
-                            </h1>
+                            </h1> */}
                         </div>
                     </form>
 

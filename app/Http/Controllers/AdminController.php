@@ -274,6 +274,7 @@ class AdminController extends Controller
           ->get();
 
         return Inertia::render('Admin/ClassroomView', [
+            'class_id' => $id,
             'classroom' => $classroom,
             'students' => $students,
             'initialThreads' => $threads,
@@ -281,7 +282,7 @@ class AdminController extends Controller
             'assignments' => $assignments,
         ]);
     }
-
+    
     public function addStudent(Request $request, $id)
     {
         $request->validate([

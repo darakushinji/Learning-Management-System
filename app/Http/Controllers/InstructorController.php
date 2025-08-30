@@ -182,7 +182,17 @@ class InstructorController extends Controller
         ]);
     }
 
-
+     public function getThreads($id)
+    {
+        $threads = Thread::with(['user', 'replies.user'])
+            ->where('class_id', $id)
+            ->latest()
+            ->get();
+        
+        return response()->json([
+            'threads' => $threads,
+        ]);
+    }
 
     public function addStudent(Request $request, $id)
     {

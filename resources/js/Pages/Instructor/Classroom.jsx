@@ -3,6 +3,7 @@ import InstructorLayout from "@/Layouts/InstructorLayout";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { FiVideo } from "react-icons/fi";
+import Threads from "./Classroom/Threads";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Classroom({
@@ -12,6 +13,10 @@ export default function Classroom({
     quizzes = [],
     submissions = [],
 }) {
+    const { class_id } = usePage().props;
+
+    console.log("This is the Class ID:", class_id);
+    console.log("Or from classroom.id:", classroom?.id);
     const { props } = usePage();
     const [activeTab, setActiveTab] = useState("threads");
     const [threads, setThreads] = useState(initialThreads);
@@ -33,10 +38,8 @@ export default function Classroom({
             ],
         },
     ]);
-
+    console.log("This is the Class ID:", class_id);
     console.log("Submissions:", submissions);
-    console.log("Current User:", props.firstname);
-
     // Quiz form
     const {
         data: quizData,
@@ -330,6 +333,7 @@ export default function Classroom({
                 <div className="flex space-x-4 border-b mb-4">
                     {[
                         "threads",
+                        "thread sample",
                         "materials",
                         "assignments",
                         "quiz",
@@ -494,6 +498,10 @@ export default function Classroom({
                                 )}
                             </div>
                         </div>
+                    )}
+
+                    {activeTab === "thread sample" && (
+                        <Threads classId={classroom.id}></Threads>
                     )}
 
                     {activeTab === "materials" && (
