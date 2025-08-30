@@ -76,6 +76,7 @@ Route::middleware(['auth', 'instructor'])->group(function () {
 Route::post('/classroom/{classroom}/materials', [MaterialController::class, 'store'])->name('materials.store');
 Route::post('/classroom/{classroom}/assignments', [InstructorController::class, 'storeAss'])->name('assignments.store');
 Route::post('/classroom/{id}/thread', [InstructorController::class, 'storeThread'])->name('thread.store');
+Route::post('/classroom/{id}/threads', [InstructorController::class, 'storeThreads']);
 Route::post('/thread/{thread}/reply', [InstructorController::class, 'storeReply'])->name('thread.reply');
 
 Route::middleware('auth')->group(function () {

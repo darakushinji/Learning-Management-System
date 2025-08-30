@@ -2,8 +2,8 @@ import { useState, useEffect, React } from "react";
 import axios from "axios";
 
 export default function Threads({ classId }) {
-    const [initialThreads, setInitialThreads] = useState([]);
-    const [threads, setThreads] = useState(initialThreads);
+    const [threadData, setThreadData] = useState("");
+    const [threads, setThreads] = useState([]);
 
     console.log("Classroom ID:", classId);
 
@@ -17,7 +17,7 @@ export default function Threads({ classId }) {
 
                 const res = await axios.get(`/threads/${classId}`);
                 console.log("Initial Threads:", res.data.threads);
-                setInitialThreads(res.data.threads);
+                setThreads(res.data.threads);
             } catch (error) {
                 console.error("Error fetching initial threads.", error);
             }
@@ -27,10 +27,38 @@ export default function Threads({ classId }) {
         return () => clearInterval(interval);
     }, [classId]);
 
-    const handleCreateThread = (e) => {};
+    const handleCreateThread = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await axios.post(`/classroom/${classId}/threads`, {
+                message: threadData,
+            });
+            setThreads((prev) => [res.data.thread, ...prev]);
+            setThreadData("");
+        } catch (error) {
+            alert("Tangina hindi gumana tol");
+            console.error("Error starting discussions.", error);
+        }
+    };
     return (
         <div>
-            <form onSubmit={handleCreateThread} className="mb-6"></form>
+            <form onSubmit={handleCreateThread} className="mb-6">
+                <textarea
+                    value={threadData}
+                    onChange={(e) => setThreadData(e.target.value)}
+                    className="w-full border p-3 rounded"
+                    rows="3"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    className="mt-2 bg-purple-500 text-white px-4 py-2"
+                >
+                    Post Thread
+                </button>
+            </form>
         </div>
     );
 }

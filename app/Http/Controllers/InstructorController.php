@@ -220,6 +220,25 @@ class InstructorController extends Controller
         return back();
     }
 
+    // json response
+    public function storeThreads(Request $request, $id)
+    {
+        $request->validate([
+            'message' => 'required|string'
+        ]);
+
+        $thread = Thread::create([
+            'class_id' => $id,
+            'user_id' => auth()->id(),
+            'message' => $request->message,
+        ]);
+
+        return response()->json([
+            'success' => true, 
+            'thread' => $thread,
+        ]);
+    }
+
     public function storeReply(Request $request, Thread $thread)
     {
         $request->validate(['message' => 'required|string']);
