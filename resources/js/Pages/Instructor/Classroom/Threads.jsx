@@ -41,6 +41,8 @@ export default function Threads({ classId }) {
             console.error("Error starting discussions.", error);
         }
     };
+
+    const handleReply = async (e) => {};
     return (
         <div>
             <form onSubmit={handleCreateThread} className="mb-6">
@@ -59,6 +61,24 @@ export default function Threads({ classId }) {
                     Post Thread
                 </button>
             </form>
+            <div className="space-y-6">
+                {threads?.map((thread) => (
+                    <div
+                        key={thread.id}
+                        className="border p-4 rounded-lg bg-white shadow-sm"
+                    >
+                        <div className="flex items-center mb-2">
+                            <span className="font-semibold">
+                                {thread?.user?.firstname || "Anonymous"}
+                            </span>
+                            <span className="text-gray-400 text-sm ml-2">
+                                {new Date(thread.created_at).toLocaleString()}
+                            </span>
+                        </div>
+                        <p className="mb-4">{thread?.message || ""}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

@@ -252,51 +252,51 @@ class InstructorController extends Controller
         return back();
     }
 
-public function storeAss(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'file' => 'required|file|mimes:pdf,docx,txt,ppt,pptx|max:10240',
-        'classroom_id' => 'required|exists:classes,id',
-        'due_date' => 'required|date',
-    ]);
-
-    if ($request->hasFile('file')) {
-        $file = $request->file('file');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $uploadPath = public_path('assignments');
-
-        if (!File::exists($uploadPath)) {
-            File::makeDirectory($uploadPath, 0777, true);
-        }
-
-        $file->move($uploadPath, $filename);
-        $filePath = $filename;
-
-        // Create a new assignment record
-        $assignment = Assignment::create([
-            'class_id' => $request->input('classroom_id'),
-            'title' => $request->input('title'),
-            'description' => $request->input('description', ''),
-            'due_date' => $request->input('due_date'),
-            'attachment' => $filePath,
+    public function storeAss(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf,docx,txt,ppt,pptx|max:10240',
+            'classroom_id' => 'required|exists:classes,id',
+            'due_date' => 'required|date',
         ]);
 
-        // Notify all students in the class about the new assignment
-        $class = ClassModel::find($request->input('classroom_id'));
-        if ($class) {
-            foreach ($class->students as $student) {
-                $student->notify(new \App\Notifications\NewAssignmentNotification($assignment));
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $uploadPath = public_path('assignments');
+
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0777, true);
             }
+
+            $file->move($uploadPath, $filename);
+            $filePath = $filename;
+
+            // Create a new assignment record
+            $assignment = Assignment::create([
+                'class_id' => $request->input('classroom_id'),
+                'title' => $request->input('title'),
+                'description' => $request->input('description', ''),
+                'due_date' => $request->input('due_date'),
+                'attachment' => $filePath,
+            ]);
+
+            // Notify all students in the class about the new assignment
+            $class = ClassModel::find($request->input('classroom_id'));
+            if ($class) {
+                foreach ($class->students as $student) {
+                    $student->notify(new \App\Notifications\NewAssignmentNotification($assignment));
+                }
+            }
+
+            return back()->with('success', 'Assignment uploaded successfully');
+        } else {
+            return back()->with('error', 'Assignment not uploaded successfully');
         }
-
-        return back()->with('success', 'Assignment uploaded successfully');
-    } else {
-        return back()->with('error', 'Assignment not uploaded successfully');
     }
-}
 
-public function showProfile()
+    public function showProfile()
     {
         return inertia('Instructor/Profile', [
             'user' => Auth::user(),
