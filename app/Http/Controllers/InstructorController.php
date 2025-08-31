@@ -251,7 +251,7 @@ class InstructorController extends Controller
 
         return back();
     }
-
+    
     public function storeAss(Request $request)
     {
         $request->validate([

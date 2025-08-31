@@ -6,6 +6,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\Auth\RegisterInstructorController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\AdminController;
@@ -76,7 +77,7 @@ Route::middleware(['auth', 'instructor'])->group(function () {
 Route::post('/classroom/{classroom}/materials', [MaterialController::class, 'store'])->name('materials.store');
 Route::post('/classroom/{classroom}/assignments', [InstructorController::class, 'storeAss'])->name('assignments.store');
 Route::post('/classroom/{id}/thread', [InstructorController::class, 'storeThread'])->name('thread.store');
-Route::post('/classroom/{id}/threads', [InstructorController::class, 'storeThreads']);
+Route::post('/classroom/{id}/threads', [ThreadController::class, 'storeThreads']);
 Route::post('/thread/{thread}/reply', [InstructorController::class, 'storeReply'])->name('thread.reply');
 
 Route::middleware('auth')->group(function () {
