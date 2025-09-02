@@ -113,7 +113,7 @@ export default function Login({ status, canResetPassword }) {
 
                         <div className="flex items-center justify-center gap-2">
                             <h1>Don't have an account?</h1>
-                            {/* <h1>
+                            <h1>
                                 {" "}
                                 <Link
                                     href={route("register")}
@@ -121,11 +121,11 @@ export default function Login({ status, canResetPassword }) {
                                 >
                                     Register here
                                 </Link>
-                            </h1> */}
+                            </h1>
                         </div>
                     </form>
 
-                    <div className="mt-6 text-center">
+                    <div className="mt-2 text-center">
                         <a
                             href={route("redirect.google")}
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"

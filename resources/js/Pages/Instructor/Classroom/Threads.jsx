@@ -4,6 +4,11 @@ import axios from "axios";
 export default function Threads({ classId }) {
     const [threadData, setThreadData] = useState("");
     const [threads, setThreads] = useState([]);
+    const [replyData, setReplyData] = useState({
+        thread_id: null,
+        message: "",
+    });
+    const [replyProcessing, setReplyProcessing] = useState(false);
 
     console.log("Classroom ID:", classId);
 
@@ -42,7 +47,21 @@ export default function Threads({ classId }) {
         }
     };
 
-    const handleReply = async (e) => {};
+    const handleReplyClick = (threadId) => {
+        setReplyData({ thread_id: threadId, message: "" });
+    };
+
+    const handleCreateReply = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await axios.post(`/thread/${classId}/thread/reply`, {});
+        } catch (error) {
+            console.error("Failed to reply.", error);
+        }
+    };
+
+    const resetReply = async (e) => {};
     return (
         <div>
             <form onSubmit={handleCreateThread} className="mb-6">
@@ -76,6 +95,73 @@ export default function Threads({ classId }) {
                             </span>
                         </div>
                         <p className="mb-4">{thread?.message || ""}</p>
+                        <button
+                            onClick={() => handleReplyClick(thread.id)}
+                            className="text-sm text-purple-600 mt-2"
+                        >
+                            Reply
+                        </button>
+                        {replyData.thread_id === thread.id && (
+                            <form
+                                onSubmit={(e) =>
+                                    handleCreateReply(thread.id, e)
+                                }
+                                className="ml-6 mt-4"
+                            >
+                                <textarea
+                                    value={replyData.message}
+                                    onChange={(e) =>
+                                        setReplyData({
+                                            ...replyData,
+                                            message: e.target.value,
+                                        })
+                                    }
+                                    placeholder="write your reply..."
+                                    className="w-full border p-2 rounded-md"
+                                    rows="2"
+                                />
+                                <div className="flex space-x-2 mt-2">
+                                    <button
+                                        type="submit"
+                                        className="bg-purple-600 text-white px-3 py-1 rounded-md"
+                                        disabled={replyProcessing}
+                                    >
+                                        Post Reply
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={resetReply}
+                                        className="bg-gray-200 px-3 py-1 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        )}
+
+                        {thread.replies?.length > 0 && (
+                            <div className="mt-4 ml-6 space-y-4">
+                                {thread.replies.map((reply) => (
+                                    <div
+                                        key={reply.id}
+                                        className="border-l-2 pl-4 py-2"
+                                    >
+                                        <div className="flex items-center mb-1">
+                                            <span className="font-semibold">
+                                                {reply?.user?.firstname ||
+                                                    "Anonymous"}
+                                            </span>
+                                            <span className="text-gray-400 text-sm ml-2">
+                                                {new Date(
+                                                    reply.created_at
+                                                ).toLocaleString()}
+                                            </span>
+                                            <p>{reply?.message || ""}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

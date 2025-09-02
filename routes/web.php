@@ -79,6 +79,7 @@ Route::post('/classroom/{classroom}/assignments', [InstructorController::class, 
 Route::post('/classroom/{id}/thread', [InstructorController::class, 'storeThread'])->name('thread.store');
 Route::post('/classroom/{id}/threads', [ThreadController::class, 'storeThreads']);
 Route::post('/thread/{thread}/reply', [InstructorController::class, 'storeReply'])->name('thread.reply');
+Route::post('/thread/{thread}/thread/reply', [ThreadController::class, 'storeThreadReply']);
 
 Route::middleware('auth')->group(function () {
     Route::post('/instructor/classroom/{id}/add-student', [InstructorController::class, 'addStudent'])->name('instructor.classroom.addStudent');
