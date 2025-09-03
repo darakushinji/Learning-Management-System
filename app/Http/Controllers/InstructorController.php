@@ -182,7 +182,18 @@ class InstructorController extends Controller
         ]);
     }
 
-     public function getThreads($id)
+    public function testClassroom($id)
+    {
+        $classroom = ClassModel::with('students')
+            ->where('instructor_id', auth()->id())
+            ->findOrFail($id);
+
+        return Inertia::render('Instructor/TestClassroom', {
+            'classroom' => $classroom,
+        });
+    }
+
+    public function getThreads($id)
     {
         $threads = Thread::with(['user', 'replies.user'])
             ->where('class_id', $id)

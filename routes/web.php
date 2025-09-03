@@ -68,6 +68,7 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::delete('/instructor/classroom/{id}', [InstructorController::class, 'destroy'])->name('classroom.destroy');
     Route::post('/instructor/classes', [InstructorController::class, 'storeClassroom'])->name('instructor.classes.store');
     Route::get('/instructor/classroom/{id}', [InstructorController::class, 'show'])->name('instructor.classroom.show');
+    Route::get('/classroom/show/{id}', [InstructorController::class, 'testClassroom'])->name('test.classroom');
     Route::get('/instructor/profile', [InstructorController::class, 'showProfile'])->name('instructor.profile');
     Route::put('/instructor/profile', [InstructorController::class, 'update']);
     Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
