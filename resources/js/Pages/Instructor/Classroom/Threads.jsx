@@ -51,13 +51,37 @@ export default function Threads({ classId }) {
         setReplyData({ thread_id: threadId, message: "" });
     };
 
-    const handleCreateReply = async (e) => {
+    const handleCreateReply = async (threadId, e) => {
         e.preventDefault();
+        if (!replyData.message) return;
+
+        setReplyProcessing(true);
 
         try {
-            const res = await axios.post(`/thread/${classId}/thread/reply`, {});
+            const res = await axios.post(`/threads/${threadId}/replies`, {
+                message: replyData.message,
+            });
+            setThreads((prev) =>
+                prev.map((thread) =>
+                    thread.id === threadId
+                        ? {
+                              ...thread,
+                              replies: [
+                                  res.data.reply,
+                                  ...(thread.replies || []),
+                              ],
+                          }
+                        : thread
+                )
+            );
+
+            alert("Success");
+
+            setReplyData({ thread_id: null, message: "" });
         } catch (error) {
-            console.error("Failed to reply.", error);
+            console.error("Error posting reply:", error);
+        } finally {
+            setReplyProcessing(false);
         }
     };
 
@@ -146,17 +170,20 @@ export default function Threads({ classId }) {
                                         key={reply.id}
                                         className="border-l-2 pl-4 py-2"
                                     >
-                                        <div className="flex items-center mb-1">
+                                        <div className="flex flex-col items-start mb-1">
                                             <span className="font-semibold">
                                                 {reply?.user?.firstname ||
                                                     "Anonymous"}
                                             </span>
+
+                                            <p className="ml-2">
+                                                {reply?.message || ""}
+                                            </p>
                                             <span className="text-gray-400 text-sm ml-2">
                                                 {new Date(
                                                     reply.created_at
                                                 ).toLocaleString()}
                                             </span>
-                                            <p>{reply?.message || ""}</p>
                                         </div>
                                     </div>
                                 ))}
