@@ -2,9 +2,11 @@ import React from "react";
 import { Link } from "@inertiajs/react";
 import { FiVideo } from "react-icons/fi";
 import Threads from "./Classroom/Threads";
+import { useState } from "react";
 import InstructorLayout from "@/Layouts/InstructorLayout";
 
 export default function TestClassroom({ classroom = { students: [] } }) {
+    const [activeTab, setActiveTab] = useState("threads");
     return (
         <InstructorLayout>
             <div className="space-y-4">
@@ -25,6 +27,33 @@ export default function TestClassroom({ classroom = { students: [] } }) {
                     >
                         <FiVideo />
                     </Link>
+                </div>
+
+                <div className="flex space-x-4 border-b mb-4">
+                    {[
+                        "threads",
+                        "materials",
+                        "assignments",
+                        "quiz",
+                        "members",
+                    ].map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`py-2 px-4 text-sm font-medium capitalize border-b-2 transition ${
+                                activeTab === tab
+                                    ? "border-purple-600 text-purple-600"
+                                    : "border-transparent text-gray-500 hover:text-purple-600"
+                            }`}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+                <div className="mt-4">
+                    {activeTab === "threads" && (
+                        <Threads classId={classroom.id}></Threads>
+                    )}
                 </div>
             </div>
         </InstructorLayout>
