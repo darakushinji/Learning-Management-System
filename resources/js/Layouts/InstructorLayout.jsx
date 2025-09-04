@@ -54,6 +54,14 @@ export default function InstructorLayout({ header, children }) {
                         Manage Classroom
                     </NavLink> */}
                     <Link
+                        href={route("test.list")}
+                        // active={route().current("admin.profile")}
+                        className="flex items-center gap-2"
+                    >
+                        <h1 className="text-white text-lg">Test Only</h1>
+                    </Link>
+
+                    <Link
                         href={route("instructor.profile")}
                         // active={route().current("admin.profile")}
                         className="flex items-center gap-2"

@@ -62,6 +62,17 @@ class InstructorController extends Controller
         ]);
     }
 
+    
+    // json response
+    public function jsonClassList()
+    {
+        $classList = ClassModel::where('instructor_id', auth()->id())->get();
+
+        return response()->json([
+            'classList' => $classList,
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render('Instructor/Create');
@@ -182,15 +193,20 @@ class InstructorController extends Controller
         ]);
     }
 
+    public function testClassroomList()
+    {
+        return Inertia::render('Instructor/ClassListTest');
+    }
+
     public function testClassroom($id)
     {
         $classroom = ClassModel::with('students')
             ->where('instructor_id', auth()->id())
             ->findOrFail($id);
 
-        return Inertia::render('Instructor/TestClassroom', {
+       return Inertia::render('Instructor/TestClassroom', [
             'classroom' => $classroom,
-        });
+       ]);
     }
 
     public function getThreads($id)

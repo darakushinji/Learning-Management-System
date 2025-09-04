@@ -14,8 +14,6 @@ export default function Classroom({
     submissions = [],
 }) {
     const { class_id } = usePage().props;
-
-    console.log("This is the Class ID:", class_id);
     console.log("Or from classroom.id:", classroom?.id);
     const { props } = usePage();
     const [activeTab, setActiveTab] = useState("threads");

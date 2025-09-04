@@ -62,6 +62,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('/instructor/dashboard', [InstructorController::class, 'dashboard'])->name('instructor.dashboard');
     Route::get('/instructor/class', [InstructorController::class, 'classList'])->name('instructor.classList');
+    Route::get('/instructor/list/class', [InstructorController::class, 'testClassroomList'])->name('test.list');
+    Route::get('/instructor/classes/list', [InstructorController::class, 'jsonClassList'])->name('json.classList');
     Route::get('/instructor/create-class', [InstructorController::class, 'create'])->name('instructor.create');
     Route::get('/instructor/{id}/editClass', [InstructorController::class, 'edit'])->name('instructor.classroom.edit');
     Route::put('/instructor/classroom/{id}', [InstructorController::class, 'updateClassroom'])->name('classroom.update');
