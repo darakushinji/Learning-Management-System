@@ -78,7 +78,9 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('/threads/{id}', [InstructorController::class, 'getThreads']);
 });
 
+
 Route::post('/class/materials/{classrom}', [ClassMaterialController::class, 'store']);
+Route::get('/classroom/material/fetch/{id}', [ClassMaterialController::class, 'fetchMaterials']);
 Route::post('/classroom/{classroom}/materials', [MaterialController::class, 'store'])->name('materials.store');
 Route::post('/classroom/{classroom}/assignments', [InstructorController::class, 'storeAss'])->name('assignments.store');
 Route::post('/classroom/{id}/thread', [InstructorController::class, 'storeThread'])->name('thread.store');

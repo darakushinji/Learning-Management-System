@@ -11,7 +11,7 @@ use App\Notifications\NewMaterialNotification;
 
 class ClassMaterialController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $classId)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -31,7 +31,7 @@ class ClassMaterialController extends Controller
             $filePath = $filename;
 
             $material = Material::create([
-                'class_id' => $request->input('class_id'),
+                'class_id' => $classId,
                 'title' => $request->input('title'),
                 'materials_folder' => $filePath,
             ]);
@@ -46,11 +46,23 @@ class ClassMaterialController extends Controller
 
             return response()->json([
                 'success' => true,
+                'material' => $material,
             ]);
         } else {
             return response()->json([
                 'success' => false,
             ]);
         }
+    }
+
+    public function fetchMaterials($id)
+    {
+        $materials = Material::where('class_id', $id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'materials' => $materials
+        ]);
     }
 }
