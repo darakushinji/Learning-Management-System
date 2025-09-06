@@ -36,8 +36,11 @@ class ClassMaterialController extends Controller
                 'materials_folder' => $filePath,
             ]);
 
+            // $class = ClassModel::with('students')
+            //     ->find($request->input('class_id'));
+
             $class = ClassModel::with('students')
-                ->find($request->input('class_id'));
+                ->find($classId);
             if ($class) {
                 foreach ($class->students as $student) {
                     $student->notify(new NewMaterialNotification($material));
