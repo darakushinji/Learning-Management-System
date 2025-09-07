@@ -109,6 +109,6 @@ Route::post('/video-call/{id}/leave', [VideoCallController::class, 'leave']);
 // refactor ver
 Route::post('/class/materials/{classrom}', [ClassMaterialController::class, 'store']);
 Route::get('/classroom/material/fetch/{id}', [ClassMaterialController::class, 'fetchMaterials']);
-Route::post('/classroom/assignment/{classroom}/store', [AssignmentController::class, 'storeAssignment']);
+Route::post('/classroom/assignment/{classroom}/store', [AssController::class, 'storeAssignment']);
 Route::get('/fetch/assignments/{id}', [AssController::class, 'getAssignment']);
 require __DIR__.'/auth.php';

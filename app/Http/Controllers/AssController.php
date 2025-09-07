@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 
 class AssController extends Controller
 {
-    public function storeAss(Request $request, $classId)
+    public function storeAssignment(Request $request, $classId)
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf,docx,txt,ppt,pptx|max:10240',
-            'classroom_id' => 'required|exists:classes,id',
             'due_date' => 'required|date',
         ]);
+
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -32,7 +32,7 @@ class AssController extends Controller
 
             // Create a new assignment record
             $assignment = Assignment::create([
-                'class_id' => $request->input('classroom_id'),
+                'class_id' => $classId,
                 'title' => $request->input('title'),
                 'description' => $request->input('description', ''),
                 'due_date' => $request->input('due_date'),
@@ -47,7 +47,9 @@ class AssController extends Controller
                 }
             }
 
-            return back()->with('success', 'Assignment uploaded successfully');
+            return response()->json([
+                'assignment' => $assignment,
+            ]);
         } else {
             return back()->with('error', 'Assignment not uploaded successfully');
         }
