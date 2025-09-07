@@ -57,7 +57,8 @@ class AssController extends Controller
 
     public function getAssignment($id)
     {
-        $assignments = Assignment::where('class_id', $id)
+        $assignments = Assignment::with(submissions.student)
+            ->where('class_id', $id)
             ->latest()
             ->get();
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, React } from "react";
-import usePage from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import axios from "axios";
 
 export default function Assignments({ classId }) {
@@ -11,6 +11,7 @@ export default function Assignments({ classId }) {
     const [assignments, setAssignments] = useState([]);
     const [assignmentProcessing, setAssignmentProcessing] = useState(false);
     const [assignmentTab, setAssignmentTab] = useState("ongoing");
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -65,6 +66,26 @@ export default function Assignments({ classId }) {
         } finally {
             setAssignmentProcessing(false);
         }
+    };
+
+    const getAssignmentsByStatus = (status) => {
+        const now = new Date();
+        if (!assignments) return [];
+
+        if (status === "ongoing") {
+            return assignments.filter((a) => new Date(a.due_date) >= now);
+        } else if (status === "pastDue") {
+            return assignments.filter(
+                (a) =>
+                    new Date(a.due_date) < now &&
+                    (!a.submissions || a.submissions.length === 0)
+            );
+        } else if (status === "completed") {
+            return assignments.filter(
+                (a) => a.submissions && a.submissions.length > 0
+            );
+        }
+        return assignments;
     };
 
     return (
@@ -160,6 +181,88 @@ export default function Assignments({ classId }) {
                         </button>
                     ))}
                 </div>
+
+                <ul className="space-y-4 mb-6">
+                    {getAssignmentsByStatus(assignmentTab).map((assignment) => (
+                        <li
+                            key={assignment.id}
+                            className="border rounded-lg p-4 bg-white shadow cursor-pointer hover:bg-gray transition"
+                            onClick={() => setSelectedAssignment(assignment)}
+                            title="Click to view and grade submissions"
+                        >
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h3 className="font-semibold flex items-center gap-2">
+                                        {assignment.title}
+                                        <span
+                                            className={`inline-block px-2 py-0.5 rounded text-xs bg-${
+                                                assignmentTab === "ongoing"
+                                                    ? "green"
+                                                    : assignmentTab ===
+                                                      "pastDue"
+                                                    ? "red"
+                                                    : "blue"
+                                            }-100 text-${
+                                                assignmentTab === "ongoing"
+                                                    ? "green"
+                                                    : assignmentTab ===
+                                                      "pastDue"
+                                                    ? "red"
+                                                    : "blue"
+                                            }-700 ml-2`}
+                                        >
+                                            {assignmentTab
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                                assignmentTab.slice()}
+                                        </span>
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                        Due:{" "}
+                                        {new Date(
+                                            assignment.due_date
+                                        ).toLocaleDateString()}
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                        {assignment.submissions?.length || 0}{" "}
+                                        submission(s)
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    ))}
+                    {getAssignmentsByStatus(assignmentTab).length === 0 && (
+                        <li className="text-gray-500 text-center py-8">
+                            No Assignment in this category.
+                        </li>
+                    )}
+                </ul>
+                {selectedAssignment && (
+                    <div className="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-30">
+                        <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6 relative animate-fade-in overflow-y-auto max-h-[90vh]">
+                            <button
+                                onClick={() => setSelectedAssignment(null)}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg"
+                                title="Close"
+                            >
+                                ×
+                            </button>
+                            <h3 className="text-lg font-bold mb-2">
+                                {selectedAssignment.title}
+                            </h3>
+                            <h3 className="mb-2 text-gray-700">
+                                {selectedAssignment.description}
+                            </h3>
+                            <p className="mb-4 text-sm text-gray-500">
+                                Due:{" "}
+                                {new Date(
+                                    selectedAssignment.due_date
+                                ).toLocaleDateString()}
+                            </p>
+                            <h4 className="font-semibold mb-2">Submissions</h4>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );
