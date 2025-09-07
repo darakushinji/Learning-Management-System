@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Material;
 use App\Models\ClassModel;
+use App\Models\Assignment;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\NewMaterialNotification;
@@ -66,6 +67,17 @@ class ClassMaterialController extends Controller
 
         return response()->json([
             'materials' => $materials
+        ]);
+    }
+
+    public function getAss($id)
+    {
+        $assignments = Assignment::where('class_id', $id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'assignments' => $assignments,
         ]);
     }
 }

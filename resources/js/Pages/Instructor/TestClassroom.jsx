@@ -3,6 +3,7 @@ import { Link } from "@inertiajs/react";
 import { FiVideo } from "react-icons/fi";
 import Threads from "./Classroom/Threads";
 import Materials from "./Classroom/Materials";
+import Assignments from "./Classroom/Assignments";
 import { useState } from "react";
 import InstructorLayout from "@/Layouts/InstructorLayout";
 
@@ -57,6 +58,9 @@ export default function TestClassroom({ classroom = { students: [] } }) {
                     )}
                     {activeTab === "materials" && (
                         <Materials classId={classroom.id}></Materials>
+                    )}
+                    {activeTab === "assignments" && (
+                        <Assignments classId={classroom.id}></Assignments>
                     )}
                 </div>
             </div>
