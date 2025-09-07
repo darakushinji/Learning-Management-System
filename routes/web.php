@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\AssController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\InstructorController;
@@ -110,5 +110,5 @@ Route::post('/video-call/{id}/leave', [VideoCallController::class, 'leave']);
 Route::post('/class/materials/{classrom}', [ClassMaterialController::class, 'store']);
 Route::get('/classroom/material/fetch/{id}', [ClassMaterialController::class, 'fetchMaterials']);
 Route::post('/classroom/assignment/{classroom}/store', [AssignmentController::class, 'storeAssignment']);
-Route::get('/fetch/assignments/{id}', [ClassMaterialController::class, 'getAss']);
+Route::get('/fetch/assignments/{id}', [AssController::class, 'getAssignment']);
 require __DIR__.'/auth.php';

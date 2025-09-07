@@ -7,6 +7,7 @@ export default function Assignments({ classId }) {
     const [duedate, setDuedate] = useState("");
     const [attachment, setAttachment] = useState("");
     const [assignments, setAssignments] = useState([]);
+    const [assignmentProcessing, setAssignmentProcessing] = useState(false);
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -29,6 +30,8 @@ export default function Assignments({ classId }) {
         const interval = setInterval(fetchAssignments, 1000);
         return () => clearInterval(interval);
     }, [classId]);
+
+    const handleAddAssignment = async (e) => {};
 
     return (
         <>
