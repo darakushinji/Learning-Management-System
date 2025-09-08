@@ -68,5 +68,27 @@ class AssController extends Controller
         ]);
     }
 
+    public function addGrade(Request $request,  Submission $submission)
+    {
+        // dd($request->all());
+        $submission->load('student');
 
+        $validated = $request->validate([
+            'grade' => 'required|string|max:10',
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+
+        $submission->update([
+            ...$validated,
+            'status' => 'completed',
+        ]);
+
+        if ($submission->student) {
+            $submission->student->notify(new SubmissionGraded($submission));
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
 }

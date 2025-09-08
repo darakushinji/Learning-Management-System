@@ -13,6 +13,7 @@ export default function Assignments({ classId }) {
     const [assignmentTab, setAssignmentTab] = useState("ongoing");
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [gradingAll, setGradingAll] = useState(false);
+    const [gradingData, setGradingData] = useState({});
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -101,7 +102,13 @@ export default function Assignments({ classId }) {
         const data = gradingData[submissionId];
         if (!data) return;
 
-        const res = await axios.post(`/`);
+        try {
+            await axios.put(`/submissions/grade/${submissionId}`, data);
+            alert("Grade updated!");
+        } catch (error) {
+            console.error("Error posting grade.", error);
+            alert("Failed to update.");
+        }
     };
 
     return (
@@ -305,8 +312,12 @@ export default function Assignments({ classId }) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            defaultValue={
-                                                                submission.grade ||
+                                                            value={
+                                                                gradingData[
+                                                                    submission
+                                                                        .id
+                                                                ]?.grade ??
+                                                                submission.grade ??
                                                                 ""
                                                             }
                                                             onChange={(e) =>
@@ -333,8 +344,12 @@ export default function Assignments({ classId }) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            defaultValue={
-                                                                submission.feedback ||
+                                                            value={
+                                                                gradingData[
+                                                                    submission
+                                                                        .id
+                                                                ]?.feedback ??
+                                                                submission.feedback ??
                                                                 ""
                                                             }
                                                             onChange={(e) =>
@@ -414,7 +429,7 @@ export default function Assignments({ classId }) {
                                         className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                                         disabled={gradingAll}
                                     >
-                                        {gradinAll
+                                        {gradingAll
                                             ? "Saving..."
                                             : "Save All Grades"}
                                     </button>

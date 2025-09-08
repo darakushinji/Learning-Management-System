@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/classroom/{id}', [StudentController::class, 'show'])->name('classes.show');
     Route::post('/assignment/submit', [StudentController::class, 'submit'])->name('assignment.submit');
     Route::put('/submissions/{submission}/grade', [SubmissionController::class, 'addGrade']);
+    Route::put('/submissions/grade/{submission}', [AssController::class, 'addGrade']);
     Route::get('/student/notifications', [NotificationController::class, 'notification'])->name('student.notifications');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
