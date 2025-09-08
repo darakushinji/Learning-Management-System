@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use Illuminate\Support\Facades\File;
 use App\Notifications\NewAssignmentNotification;
+use App\Notifications\SubmissionGraded;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 
 class AssController extends Controller
@@ -57,8 +59,7 @@ class AssController extends Controller
 
     public function getAssignment($id)
     {
-        $assignments = Assignment::with(submissions.student)
-            ->where('class_id', $id)
+        $assignments = Assignment::with('submissions.student')->where('class_id', $id)
             ->latest()
             ->get();
 
@@ -66,4 +67,6 @@ class AssController extends Controller
             'assignments' => $assignments,
         ]);
     }
+
+
 }

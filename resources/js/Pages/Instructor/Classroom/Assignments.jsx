@@ -12,6 +12,7 @@ export default function Assignments({ classId }) {
     const [assignmentProcessing, setAssignmentProcessing] = useState(false);
     const [assignmentTab, setAssignmentTab] = useState("ongoing");
     const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [gradingAll, setGradingAll] = useState(false);
 
     useEffect(() => {
         const fetchAssignments = async () => {
@@ -86,6 +87,21 @@ export default function Assignments({ classId }) {
             );
         }
         return assignments;
+    };
+
+    useEffect(() => {
+        if (selectedAssignment) {
+            document
+                .getElementById("assignemtn-details")
+                ?.scrollIntoView({ behavior: "smooth" });
+        }
+    });
+
+    const updateGrade = async (submissionId) => {
+        const data = gradingData[submissionId];
+        if (!data) return;
+
+        const res = await axios.post(`/`);
     };
 
     return (
@@ -248,7 +264,7 @@ export default function Assignments({ classId }) {
                                 ×
                             </button>
                             <h3 className="text-lg font-bold mb-2">
-                                {selectedAssignment.title}
+                                {selectedAssignment.title}b
                             </h3>
                             <h3 className="mb-2 text-gray-700">
                                 {selectedAssignment.description}
@@ -260,6 +276,149 @@ export default function Assignments({ classId }) {
                                 ).toLocaleDateString()}
                             </p>
                             <h4 className="font-semibold mb-2">Submissions</h4>
+                            <ul className="space-y-4">
+                                {selectedAssignment.submissions &&
+                                selectedAssignment.submissions.length > 0 ? (
+                                    selectedAssignment.submissions.map(
+                                        (submission) => (
+                                            <li
+                                                key={submission.id}
+                                                className="border rounded p-4 bg-gray-50 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                                            >
+                                                <div className="flex-1">
+                                                    <p className="font-medium">
+                                                        {submission.student
+                                                            ? `${submission.student.firstname}`
+                                                            : "Unknown Student"}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Submitted:{" "}
+                                                        {submission.created_at
+                                                            ? new Date(
+                                                                  submission.created_at
+                                                              ).toLocaleString()
+                                                            : "-"}
+                                                    </p>
+                                                    <div className="flex flex-col md:flex-row md:items-center gap-2 mt-2">
+                                                        <label className="text-sm mr-2">
+                                                            Grade:
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            defaultValue={
+                                                                submission.grade ||
+                                                                ""
+                                                            }
+                                                            onChange={(e) =>
+                                                                setGradingData(
+                                                                    (prev) => ({
+                                                                        ...prev,
+                                                                        [submission.id]:
+                                                                            {
+                                                                                ...prev[
+                                                                                    submission
+                                                                                        .id
+                                                                                ],
+                                                                                grade: e
+                                                                                    .target
+                                                                                    .value,
+                                                                            },
+                                                                    })
+                                                                )
+                                                            }
+                                                            className="border p-1 w-20 rounded"
+                                                        />
+                                                        <label className="text-sm ml-4 mr-2">
+                                                            Feedback:
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            defaultValue={
+                                                                submission.feedback ||
+                                                                ""
+                                                            }
+                                                            onChange={(e) =>
+                                                                setGradingData(
+                                                                    (prev) => ({
+                                                                        ...prev,
+                                                                        [submission.id]:
+                                                                            {
+                                                                                ...prev[
+                                                                                    submission
+                                                                                        .id
+                                                                                ],
+                                                                                feedback:
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                            },
+                                                                    })
+                                                                )
+                                                            }
+                                                            className="border p-1 w-40 rounded"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                updateGrade(
+                                                                    submission.id
+                                                                )
+                                                            }
+                                                            className="ml-2 px-3 py-1 bg-purple-600 text-white rounded text-sm"
+                                                        >
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <a
+                                                        href={`/submissions/${submission.assignment_folder}`}
+                                                        target="_blank"
+                                                        className="text-purple-600 underline"
+                                                    >
+                                                        View Submission
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        )
+                                    )
+                                ) : (
+                                    <li className="text-gray-400">
+                                        No submissions yet.
+                                    </li>
+                                )}
+                            </ul>
+                            {selectedAssignment.submissions &&
+                                selectedAssignment.submissions.length > 0 && (
+                                    <button
+                                        onClick={() => {
+                                            setGradingAll(true);
+                                            selectedAssignment.submissions.forEach(
+                                                (submission) => {
+                                                    if (
+                                                        gradingData[
+                                                            submission.id
+                                                        ]
+                                                    ) {
+                                                        updateGrade(
+                                                            submission.id
+                                                        );
+                                                    }
+                                                }
+                                            );
+                                            setTimeout(() =>
+                                                setGradingAll(false)
+                                            ),
+                                                1000;
+                                        }}
+                                        className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                        disabled={gradingAll}
+                                    >
+                                        {gradinAll
+                                            ? "Saving..."
+                                            : "Save All Grades"}
+                                    </button>
+                                )}
                         </div>
                     </div>
                 )}
