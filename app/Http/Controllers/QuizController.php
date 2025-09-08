@@ -103,4 +103,16 @@ class QuizController extends Controller
 
         return back()->with('success', 'Quiz submitted successfully!');
     }
+     
+    public function getQuizzes($id)
+    {
+        $quizzes = Quiz::with(['questions.choices', 'submissions.student'])
+            ->where('class_id', $id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'quizzes' => $quizzes
+        ]);
+    }
 }

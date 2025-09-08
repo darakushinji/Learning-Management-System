@@ -77,6 +77,7 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('/instructor/profile', [InstructorController::class, 'showProfile'])->name('instructor.profile');
     Route::put('/instructor/profile', [InstructorController::class, 'update']);
     Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
+    Route::get('/quizzes/{id}', [QuizController::class, 'getQuizzes']);
     Route::get('/threads/{id}', [InstructorController::class, 'getThreads']);
 });
 

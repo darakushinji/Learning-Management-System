@@ -185,11 +185,6 @@ export default function Assignments({ classId }) {
                             key: "pastDue",
                             color: "red",
                         },
-                        {
-                            label: "Completed",
-                            key: "completed",
-                            color: "blue",
-                        },
                     ].map((tab) => (
                         <button
                             key={tab.key}

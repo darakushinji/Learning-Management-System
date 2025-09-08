@@ -4,6 +4,7 @@ import { FiVideo } from "react-icons/fi";
 import Threads from "./Classroom/Threads";
 import Materials from "./Classroom/Materials";
 import Assignments from "./Classroom/Assignments";
+import Quiz from "./Classroom/Quiz";
 import { useState } from "react";
 import InstructorLayout from "@/Layouts/InstructorLayout";
 
@@ -61,6 +62,9 @@ export default function TestClassroom({ classroom = { students: [] } }) {
                     )}
                     {activeTab === "assignments" && (
                         <Assignments classId={classroom.id}></Assignments>
+                    )}
+                    {activeTab === "quiz" && (
+                        <Quiz classId={classroom.id}></Quiz>
                     )}
                 </div>
             </div>
