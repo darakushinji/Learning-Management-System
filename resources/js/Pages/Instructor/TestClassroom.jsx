@@ -5,6 +5,7 @@ import Threads from "./Classroom/Threads";
 import Materials from "./Classroom/Materials";
 import Assignments from "./Classroom/Assignments";
 import Quiz from "./Classroom/Quiz";
+import Members from "./Classroom/Members";
 import { useState } from "react";
 import InstructorLayout from "@/Layouts/InstructorLayout";
 
@@ -65,6 +66,9 @@ export default function TestClassroom({ classroom = { students: [] } }) {
                     )}
                     {activeTab === "quiz" && (
                         <Quiz classId={classroom.id}></Quiz>
+                    )}
+                    {activeTab === "members" && (
+                        <Members classId={classroom.id}></Members>
                     )}
                 </div>
             </div>

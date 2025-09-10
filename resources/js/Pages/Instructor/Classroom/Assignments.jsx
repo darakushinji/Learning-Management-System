@@ -15,6 +15,12 @@ export default function Assignments({ classId }) {
     const [gradingAll, setGradingAll] = useState(false);
     const [gradingData, setGradingData] = useState({});
 
+    const tabLabels = {
+        ongoing: "Ongoing",
+        pastDue: "Past Due",
+        completed: "Completed",
+    };
+
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
@@ -229,10 +235,7 @@ export default function Assignments({ classId }) {
                                                     : "blue"
                                             }-700 ml-2`}
                                         >
-                                            {assignmentTab
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                                assignmentTab.slice()}
+                                            {tabLabels[assignmentTab]}
                                         </span>
                                     </h3>
                                     <p className="text-sm text-gray-500">

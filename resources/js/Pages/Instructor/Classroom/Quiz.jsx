@@ -25,7 +25,6 @@ export default function Quiz({ classId }) {
         ],
     });
 
-    // Fetch quizzes
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
@@ -40,10 +39,9 @@ export default function Quiz({ classId }) {
         return () => clearInterval(interval);
     }, [classId]);
 
-    // Input handlers
-    const handleQuizInputChange = (e) => {
+    // handlers...
+    const handleQuizInputChange = (e) =>
         setQuizData({ ...quizData, [e.target.name]: e.target.value });
-    };
 
     const handleQuestionChange = (idx, field, value) => {
         const updated = [...quizData.questions];
@@ -84,16 +82,16 @@ export default function Quiz({ classId }) {
 
     const removeQuestion = (idx) => {
         if (quizData.questions.length === 1) return;
-        const updated = quizData.questions.filter((_, i) => i !== idx);
-        setQuizData({ ...quizData, questions: updated });
+        setQuizData({
+            ...quizData,
+            questions: quizData.questions.filter((_, i) => i !== idx),
+        });
     };
 
-    // Submit
     const handleCreateQuiz = async (e) => {
         e.preventDefault();
         try {
             await axios.post("/quiz", quizData);
-            // reset form
             setQuizData({
                 class_id: classId,
                 title: "",
@@ -114,7 +112,6 @@ export default function Quiz({ classId }) {
                     },
                 ],
             });
-            // refresh list
             const res = await axios.get(`/quizzes/${classId}`);
             setQuizList(res.data.quizzes);
         } catch (error) {
@@ -123,127 +120,43 @@ export default function Quiz({ classId }) {
     };
 
     return (
-        <div className="max-w-2xl mx-auto bg-red-500">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
             {/* Quiz List */}
-            <div className="mb-8">
-                <h2 className="text-lg font-bold mb-2">Existing Quizzes</h2>
+            <div className="space-y-4">
+                <h2 className="text-xl font-bold text-gray-800">
+                    Existing Quizzes
+                </h2>
                 {quizList.length === 0 ? (
                     <div className="text-gray-500">No quizzes yet.</div>
                 ) : (
-                    <ul className="space-y-4">
+                    <div className="grid gap-4">
                         {quizList.map((quiz) => (
-                            <li
+                            <div
                                 key={quiz.id}
-                                className="border rounded p-4 bg-gray-50"
+                                className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition"
                             >
-                                <div className="flex justify-between items-center">
-                                    <div className="font-semibold text-purple-700">
-                                        <h3>{quiz.title}</h3>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-semibold text-purple-700 text-lg">
+                                            {quiz.title}
+                                        </h3>
+                                        <p className="text-gray-600 text-sm">
+                                            {quiz.description}
+                                        </p>
                                     </div>
-                                    <p className="text-gray-500 text-sm mb-1">
-                                        {quiz.description}
-                                    </p>
                                     <span className="text-xs text-gray-500">
                                         {quiz.questions?.length || 0}{" "}
                                         question(s)
                                     </span>
                                 </div>
                                 <button
-                                    className="px-4 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+                                    className="mt-3 px-4 py-1 bg-blue-500 text-white rounded text-sm"
                                     onClick={() => setSelectedQuiz(quiz)}
                                 >
                                     View
                                 </button>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
-                )}
-
-                {/* Modal */}
-                {selectedQuiz && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-                        <div className="w-full max-w-2xl bg-white rounded-md shadow-md p-6 relative animate-fade-in overflow-y-auto max-h-[90vh]">
-                            <button
-                                onClick={() => setSelectedQuiz(null)}
-                                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg"
-                            >
-                                x
-                            </button>
-                            <h3 className="text-lg font-bold mb-2">
-                                {selectedQuiz.title}
-                            </h3>
-                            <p className="mb-2 text-gray-700">
-                                {selectedQuiz.description}
-                            </p>
-                            <h4 className="mb-4">Questions</h4>
-                            <ol className="mb-4 list-decimal pl-6">
-                                {selectedQuiz.questions?.map((q, idx) => (
-                                    <li key={idx} className="mb-2">
-                                        <div className="font-medium">
-                                            {q.question_text}
-                                        </div>
-                                        <ul className="ml-4 mt-1">
-                                            {q.choices?.map((c, cIdx) => (
-                                                <li
-                                                    key={cIdx}
-                                                    className={
-                                                        q.correct_choice ===
-                                                        c.label
-                                                            ? "text-green-600"
-                                                            : ""
-                                                    }
-                                                >
-                                                    <span className="font-semibold">
-                                                        {c.label}.
-                                                    </span>{" "}
-                                                    {c.text}
-                                                    {q.correct_choice ===
-                                                        c.label && (
-                                                        <span className="ml-2 text-xs text-green-600">
-                                                            (Correct)
-                                                        </span>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
-                            </ol>
-                            <h4 className="font-semibold mb-2">Submissions</h4>
-                            {selectedQuiz.submissions &&
-                            selectedQuiz.submissions.length > 0 ? (
-                                <ul className="space-y-2">
-                                    {selectedQuiz.submissions.map(
-                                        (submission) => (
-                                            <li
-                                                key={submission.id}
-                                                className="border rounded p-3 flex justify-between items-center"
-                                            >
-                                                <span>
-                                                    {submission.student
-                                                        ?.firstname ||
-                                                        "Unknown Student"}
-                                                </span>
-                                                <span className="text-sm">
-                                                    Score:{" "}
-                                                    <span className="font-bold">
-                                                        {submission.score ??
-                                                            "-"}{" "}
-                                                        /{" "}
-                                                        {selectedQuiz.questions
-                                                            ?.length || 0}
-                                                    </span>
-                                                </span>
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
-                            ) : (
-                                <div className="text-gray-500">
-                                    No submissions yet.
-                                </div>
-                            )}
-                        </div>
                     </div>
                 )}
             </div>
@@ -251,110 +164,92 @@ export default function Quiz({ classId }) {
             {/* Quiz Form */}
             <form
                 onSubmit={handleCreateQuiz}
-                className="bg-white p-6 rounded shadow"
+                className="bg-white p-6 rounded-lg shadow-md space-y-4 overflow-y-auto max-h-[85vh]"
             >
                 <h2 className="text-xl font-semibold">Create Quiz</h2>
 
-                <div className="mb-4">
-                    <label className="block font-semibold">Title</label>
-                    <input
-                        type="text"
-                        name="title"
-                        value={quizData.title}
-                        onChange={handleQuizInputChange}
-                        className="w-full border rounded px-3 py-2"
-                        required
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block font-semibold">Description</label>
-                    <textarea
-                        name="description"
-                        value={quizData.description}
-                        onChange={handleQuizInputChange}
-                        className="w-full border rounded px-3 py-2"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block font-semibold">Start Time</label>
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Quiz Title"
+                    value={quizData.title}
+                    onChange={handleQuizInputChange}
+                    className="w-full border rounded px-3 py-2"
+                    required
+                />
+                <textarea
+                    name="description"
+                    placeholder="Description"
+                    value={quizData.description}
+                    onChange={handleQuizInputChange}
+                    className="w-full border rounded px-3 py-2"
+                />
+                <div className="grid grid-cols-2 gap-3">
                     <input
                         type="datetime-local"
                         name="start_time"
                         value={quizData.start_time}
                         onChange={handleQuizInputChange}
-                        className="w-full border rounded px-3 py-2"
+                        className="border rounded px-3 py-2"
                     />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block font-semibold">End Time</label>
                     <input
                         type="datetime-local"
                         name="end_time"
                         value={quizData.end_time}
                         onChange={handleQuizInputChange}
-                        className="w-full border rounded px-3 py-2"
+                        className="border rounded px-3 py-2"
                     />
                 </div>
+                <input
+                    type="number"
+                    name="duration_minutes"
+                    placeholder="Duration (minutes)"
+                    value={quizData.duration_minutes}
+                    onChange={handleQuizInputChange}
+                    className="w-full border rounded px-3 py-2"
+                />
 
-                <div className="mb-4">
-                    <label className="block font-semibold">
-                        Duration (minutes)
-                    </label>
-                    <input
-                        type="number"
-                        name="duration_minutes"
-                        value={quizData.duration_minutes}
-                        onChange={handleQuizInputChange}
-                        className="w-full border rounded px-3 py-2"
-                    />
-                </div>
+                {/* Questions */}
+                <div className="space-y-4">
+                    {quizData.questions.map((q, idx) => (
+                        <div
+                            key={idx}
+                            className="border rounded p-4 bg-gray-50"
+                        >
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="font-semibold">
+                                    Question {idx + 1}
+                                </span>
+                                {quizData.questions.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeQuestion(idx)}
+                                        className="text-red-500 text-xs"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
 
-                {quizData.questions.map((q, idx) => (
-                    <div
-                        key={idx}
-                        className="mb-6 border p-4 rounded bg-gray-50"
-                    >
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="font-semibold">
-                                Question {idx + 1}
-                            </label>
-                            {quizData.questions.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeQuestion(idx)}
-                                    className="text-red-500 text-xs"
-                                >
-                                    Remove
-                                </button>
-                            )}
-                        </div>
+                            <input
+                                type="text"
+                                placeholder="Question text"
+                                value={q.question_text}
+                                onChange={(e) =>
+                                    handleQuestionChange(
+                                        idx,
+                                        "question_text",
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full border rounded px-3 py-2 mb-2"
+                                required
+                            />
 
-                        <input
-                            type="text"
-                            placeholder="Question text"
-                            value={q.question_text}
-                            onChange={(e) =>
-                                handleQuestionChange(
-                                    idx,
-                                    "question_text",
-                                    e.target.value
-                                )
-                            }
-                            className="w-full border rounded px-3 py-2 mb-2"
-                            required
-                        />
-
-                        <div className="mb-2">
-                            <label className="block font-semibold mb-1">
-                                Choices
-                            </label>
                             {q.choices.map((c, cIdx) => (
                                 <div
                                     key={c.label}
-                                    className="flex items-center mb-1"
+                                    className="flex items-center mb-2"
                                 >
                                     <span className="w-6">{c.label}</span>
                                     <input
@@ -373,12 +268,7 @@ export default function Quiz({ classId }) {
                                     />
                                 </div>
                             ))}
-                        </div>
 
-                        <div>
-                            <label className="block font-semibold">
-                                Correct Answer
-                            </label>
                             <select
                                 value={q.correct_choice}
                                 onChange={(e) =>
@@ -387,34 +277,81 @@ export default function Quiz({ classId }) {
                                         e.target.value
                                     )
                                 }
-                                className="border rounded px-2 py-1"
+                                className="border rounded px-2 py-1 mt-2"
                             >
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
+                                <option value="A">Correct: A</option>
+                                <option value="B">Correct: B</option>
+                                <option value="C">Correct: C</option>
+                                <option value="D">Correct: D</option>
                             </select>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
 
                 <button
                     type="button"
                     onClick={addQuestion}
-                    className="mb-4 px-4 py-2 bg-green-500 text-white rounded"
+                    className="w-full py-2 bg-green-500 text-white rounded"
                 >
-                    Add Question
+                    + Add Question
                 </button>
 
-                <div>
-                    <button
-                        type="submit"
-                        className="px-6 py-2 bg-blue-600 text-white rounded"
-                    >
-                        Create Quiz
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    className="w-full py-2 bg-blue-600 text-white rounded"
+                >
+                    Create Quiz
+                </button>
             </form>
+
+            {/* Modal */}
+            {selectedQuiz && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+                    <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-6 relative overflow-y-auto max-h-[90vh]">
+                        <button
+                            onClick={() => setSelectedQuiz(null)}
+                            className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-lg"
+                        >
+                            ×
+                        </button>
+                        <h3 className="text-xl font-bold mb-2">
+                            {selectedQuiz.title}
+                        </h3>
+                        <p className="mb-4 text-gray-700">
+                            {selectedQuiz.description}
+                        </p>
+                        <ol className="list-decimal pl-6 space-y-2">
+                            {selectedQuiz.questions?.map((q, idx) => (
+                                <li key={idx}>
+                                    <p className="font-medium">
+                                        {q.question_text}
+                                    </p>
+                                    <ul className="ml-4 mt-1 space-y-1">
+                                        {q.choices?.map((c, cIdx) => (
+                                            <li
+                                                key={cIdx}
+                                                className={
+                                                    q.correct_choice === c.label
+                                                        ? "text-green-600"
+                                                        : "text-gray-700"
+                                                }
+                                            >
+                                                {c.label}. {c.text}
+                                                {q.correct_choice ===
+                                                    c.label && (
+                                                    <span className="ml-2 text-xs">
+                                                        (Correct)
+                                                    </span>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -5,6 +5,7 @@ import InstructorLayout from "@/Layouts/InstructorLayout";
 
 export default function ClassListTest() {
     const [classList, setClassList] = useState([]);
+    const [count, setCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,6 +15,7 @@ export default function ClassListTest() {
                 if (firstLoad) setLoading(true);
                 const res = await axios.get("/instructor/classes/list");
                 console.log(res.data.classList);
+                setCount(res.data.classList.length);
                 setClassList(res.data.classList);
             } catch (error) {
                 console.error("Error fetching Classes", error);
@@ -59,7 +61,7 @@ export default function ClassListTest() {
 
                     {loading ? (
                         <div className="grid grid-cols-1 sm:grid-cols md:grid-cols-3 lg-grid-cols-4 gap-8">
-                            {[...Array(5)].map((_, i) => (
+                            {[...Array(6)].map((_, i) => (
                                 <SkeletonCard key={i} />
                             ))}
                         </div>

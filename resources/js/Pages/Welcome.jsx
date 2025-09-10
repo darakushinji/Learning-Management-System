@@ -249,7 +249,6 @@ export default function Welcome({ auth }) {
                 <nav className="fixed top-0 left-0 w-full bg-white  z-50 py-4 px-8 flex items-center justify-around h-14">
                     <div className="w-3/6 flex items-center gap-2">
                         <img src="logo/paul.png" alt="" className="h-10 w-12" />
-                        <h1 className="text-2xl font-semibold">E D U X</h1>
                     </div>
                     <div className="w-3/6 flex justify-center">
                         <ul className="flex space-x-12 text-gray-700 font-medium">

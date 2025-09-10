@@ -234,6 +234,22 @@ class InstructorController extends Controller
         return back();
     }
 
+    public function addStudentToClassroom(Request $request, $id)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $class = ClassModel::where('instructor_id', auth()->id())->findOrFail($id);
+
+        $class->students()->syncWithoutDetaching($request->student_id);
+
+        return response()->json([
+            'success' => true,
+            'class' => $class,
+        ]);
+    }
+
     public function storeThread(Request $request, $id)
     {
         $request->validate(['message' => 'required|string']);
@@ -348,4 +364,28 @@ class InstructorController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Classroom Members
+    public function getMembers($id)
+    {
+        $members = ClassModel::with('students', 'instructor')->findOrFail($id);
+
+        return response()->json([
+            'instructor' => $members->instructor,
+            'students' => $members->students
+        ]);
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string|min:1'
+        ]);
+
+        $student = User::where('firstname', 'like', '%' . $request->input('query') . '%')
+            ->where('id', '!=', auth()->id())
+            ->limit(10)
+            ->get(['id', 'firstname']);
+
+        return response()->json($student);
+    }
 }
