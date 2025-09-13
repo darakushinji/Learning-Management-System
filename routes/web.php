@@ -41,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quiz.submit');
+    Route::get('/instructor/profile', [InstructorController::class, 'editProfile'])
+        ->name('instructor.profile');
+    Route::put('/instructor/profile', [InstructorController::class, 'update'])
+        ->name('instructor.profile.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -74,8 +78,6 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::post('/instructor/classes', [InstructorController::class, 'storeClassroom'])->name('instructor.classes.store');
     Route::get('/instructor/classroom/{id}', [InstructorController::class, 'show'])->name('instructor.classroom.show');
     Route::get('/classroom/show/{id}', [InstructorController::class, 'testClassroom'])->name('test.classroom');
-    Route::get('/instructor/profile', [InstructorController::class, 'showProfile'])->name('instructor.profile');
-    Route::put('/instructor/profile', [InstructorController::class, 'update']);
     Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
     Route::get('/quizzes/{id}', [QuizController::class, 'getQuizzes']);
     Route::get('/threads/{id}', [InstructorController::class, 'getThreads']);
@@ -94,7 +96,7 @@ Route::post('/threads/{thread}/replies', [ThreadController::class, 'storeThreadR
 Route::middleware('auth')->group(function () {
     Route::post('/instructor/classroom/{id}/add-student', [InstructorController::class, 'addStudent'])->name('instructor.classroom.addStudent');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

@@ -494,7 +494,17 @@ export default function Classroom({
                                             className="border p-4 rounded-lg shadow bg-white"
                                         >
                                             <div className="flex items-center justify-between mb-2">
-                                                <div>
+                                                <div className="flex items-center mb-2">
+                                                    <img
+                                                        src={
+                                                            thread?.user
+                                                                ?.profile_picture
+                                                                ? `/${thread.user.profile_picture}` // Laravel stores in "public/profiles"
+                                                                : "/default-avatar.png" // fallback image
+                                                        }
+                                                        alt="profile"
+                                                        className="w-8 h-8 rounded-full mr-2 object-cover border"
+                                                    />
                                                     <span className="font-semibold">
                                                         {thread?.user
                                                             ?.firstname ||
@@ -576,6 +586,17 @@ export default function Classroom({
                                                         (reply) => (
                                                             <div key={reply.id}>
                                                                 <div className="flex items-center text-sm mb-1">
+                                                                    <img
+                                                                        src={
+                                                                            reply
+                                                                                ?.user
+                                                                                ?.profile_picture
+                                                                                ? `/${reply.user.profile_picture}`
+                                                                                : "/default-avatar.png"
+                                                                        }
+                                                                        alt="profile"
+                                                                        className="w-8 h-8 rounded-full mr-2 object-cover border"
+                                                                    />
                                                                     <span className="font-semibold">
                                                                         {reply
                                                                             ?.user

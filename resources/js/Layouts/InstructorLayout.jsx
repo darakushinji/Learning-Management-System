@@ -39,13 +39,13 @@ export default function InstructorLayout({ header, children }) {
                     >
                         <h1 className="text-white text-lg">Dashboard</h1>
                     </Link>
-                    <Link
+                    {/* <Link
                         href={route("instructor.classList")}
                         // active={route().current("instructor.classList")}
                         className="flex items-center gap-2"
                     >
                         <h1 className="text-white text-lg">Class</h1>
-                    </Link>
+                    </Link> */}
                     {/* <NavLink
                         href={route("instructor.create")}
                         // active={route().current("instructor.crease")}
@@ -58,7 +58,7 @@ export default function InstructorLayout({ header, children }) {
                         // active={route().current("admin.profile")}
                         className="flex items-center gap-2"
                     >
-                        <h1 className="text-white text-lg">Test Only</h1>
+                        <h1 className="text-white text-lg">Classroom</h1>
                     </Link>
 
                     <Link

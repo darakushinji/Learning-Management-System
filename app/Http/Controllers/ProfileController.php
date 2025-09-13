@@ -27,18 +27,48 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+   public function update(Request $request)
+{
+    $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'middlename' => 'nullable|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'contact_number' => 'nullable|string|max:255',
+        'specialization' => 'nullable|string|max:255',
+        'bio' => 'nullable|string',
+        'profile_picture' => 'nullable|mimes:jpg,jpeg,png|max:4095',
+    ]);
 
-        $request->user()->save();
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+        $filename = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('profiles'), $filename);
 
-        return Redirect::route('profile.edit');
+        $user->profile_picture = 'profiles/' . $filename;
     }
+
+    $user->update($request->only([
+        'firstname',
+        'middlename',
+        'lastname',
+        'email',
+        'contact_number',
+        'specialization',
+        'bio',
+    ]));
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Profile updated successfully!',
+        'user' => $user
+    ]);
+}
+
+
+
 
     /**
      * Delete the user's account.

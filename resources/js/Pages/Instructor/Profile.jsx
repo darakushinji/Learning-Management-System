@@ -11,126 +11,103 @@ export default function Profile({ user }) {
         contact_number: user.contact_number || "",
         specialization: user.specialization || "",
         bio: user.bio || "",
+        profile_picture: null,
     });
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value, files } = e.target;
+        if (name === "profile_picture") {
+            setForm({ ...form, profile_picture: files[0] });
+        } else {
+            setForm({ ...form, [name]: value });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setSuccess("");
-        setError("");
+
+        const formData = new FormData();
+        Object.keys(form).forEach((key) => {
+            if (form[key] !== null) {
+                formData.append(key, form[key]);
+            }
+        });
+
+        // Add method spoofing for Laravel
+        formData.append("_method", "PUT");
+
         try {
-            await axios.put("/instructor/profile", form);
-            setSuccess("Profile updated successfully!");
+            const res = await axios.post("/instructor/profile", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            alert(res.data.message);
         } catch (err) {
-            setError("Failed to update profile.");
+            console.error(err.response?.data || err.message);
+            alert("Update failed!");
         }
-        setLoading(false);
     };
 
     return (
         <InstructorLayout>
             <div className="max-w-xl mx-auto mt-10 bg-white p-8 rounded shadow">
                 <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+
                 <form onSubmit={handleSubmit} className="space-y-5">
+                    {[
+                        "firstname",
+                        "middlename",
+                        "lastname",
+                        "email",
+                        "contact_number",
+                        "specialization",
+                        "bio",
+                    ].map((field) => (
+                        <div key={field}>
+                            <label className="block font-medium mb-1 capitalize">
+                                {field.replace("_", " ")}
+                            </label>
+                            {field === "bio" ? (
+                                <textarea
+                                    name={field}
+                                    value={form[field]}
+                                    onChange={handleChange}
+                                    className="w-full border rounded px-3 py-2"
+                                    rows={3}
+                                />
+                            ) : (
+                                <input
+                                    type={field === "email" ? "email" : "text"}
+                                    name={field}
+                                    value={form[field]}
+                                    onChange={handleChange}
+                                    className="w-full border rounded px-3 py-2"
+                                />
+                            )}
+                        </div>
+                    ))}
+
+                    {/* Profile Picture Upload */}
                     <div>
                         <label className="block font-medium mb-1">
-                            First Name
+                            Profile Picture
                         </label>
                         <input
-                            type="text"
-                            name="firstname"
-                            value={form.firstname}
+                            type="file"
+                            name="profile_picture"
+                            accept="image/*"
                             onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                            required
+                            className="w-full"
                         />
                     </div>
-                    <div>
-                        <label className="block font-medium mb-1">
-                            Middle Name
-                        </label>
-                        <input
-                            type="text"
-                            name="middlename"
-                            value={form.middlename}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">
-                            Last Name
-                        </label>
-                        <input
-                            type="text"
-                            name="lastname"
-                            value={form.lastname}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">
-                            Contact Number
-                        </label>
-                        <input
-                            type="text"
-                            name="contact_number"
-                            value={form.contact_number}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">
-                            Specialization
-                        </label>
-                        <input
-                            type="text"
-                            name="specialization"
-                            value={form.specialization}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">Bio</label>
-                        <textarea
-                            name="bio"
-                            value={form.bio}
-                            onChange={handleChange}
-                            className="w-full border rounded px-3 py-2"
-                            rows={3}
-                        />
-                    </div>
+
                     <button
                         type="submit"
                         className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
-                        disabled={loading}
                     >
-                        {loading ? "Updating..." : "Update Profile"}
+                        Update Profile
                     </button>
-                    {success && <div className="text-green-600">{success}</div>}
-                    {error && <div className="text-red-600">{error}</div>}
                 </form>
             </div>
         </InstructorLayout>

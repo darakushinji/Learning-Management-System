@@ -111,6 +111,15 @@ export default function Threads({ classId }) {
                         className="border p-4 rounded-lg bg-white shadow-sm"
                     >
                         <div className="flex items-center mb-2">
+                            <img
+                                src={
+                                    thread?.user?.profile_picture
+                                        ? `/${thread.user.profile_picture}`
+                                        : "/default-avatar.png"
+                                }
+                                alt="profile"
+                                className="w-8 h-8 rounded-full mr-2 object-cover border"
+                            />
                             <span className="font-semibold">
                                 {thread?.user?.firstname || "Anonymous"}
                             </span>
@@ -170,20 +179,33 @@ export default function Threads({ classId }) {
                                         key={reply.id}
                                         className="border-l-2 pl-4 py-2"
                                     >
-                                        <div className="flex flex-col items-start mb-1">
-                                            <span className="font-semibold">
-                                                {reply?.user?.firstname ||
-                                                    "Anonymous"}
-                                            </span>
+                                        <div className="flex items-start mb-1">
+                                            <img
+                                                src={
+                                                    reply?.user?.profile_picture
+                                                        ? `/${reply.user.profile_picture}`
+                                                        : "/default-avatar.png"
+                                                }
+                                                alt="profile"
+                                                className="w-8 h-8 rounded-full mr-2 object-cover border"
+                                            />
 
-                                            <p className="ml-2">
-                                                {reply?.message || ""}
-                                            </p>
-                                            <span className="text-gray-400 text-sm ml-2">
-                                                {new Date(
-                                                    reply.created_at
-                                                ).toLocaleString()}
-                                            </span>
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold">
+                                                    {reply?.user?.firstname ||
+                                                        "Anonymous"}
+                                                </span>
+
+                                                <p className="ml-1">
+                                                    {reply?.message || ""}
+                                                </p>
+
+                                                <span className="text-gray-400 text-sm ml-1">
+                                                    {new Date(
+                                                        reply.created_at
+                                                    ).toLocaleString()}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

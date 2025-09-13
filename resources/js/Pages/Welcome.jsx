@@ -1,3 +1,5 @@
+"use client";
+import { motion } from "framer-motion";
 import { Head, Link } from "@inertiajs/react";
 import { useEffect } from "react";
 import gsap from "gsap";
@@ -7,6 +9,25 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 export default function Welcome({ auth }) {
+    const sentence = "Enhancing Education with Our Interactive Learning System";
+
+    const container = {
+        hidden: { opacity: 0 },
+        visible: (i = 1) => ({
+            opacity: 1,
+            transition: { staggerChildren: 0.08, delayChildren: 0.3 },
+        }),
+    };
+
+    const wordAnimation = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { ease: "easeOut", duration: 0.6 },
+        },
+    };
+
     useEffect(() => {
         gsap.utils.toA;
 
@@ -246,10 +267,15 @@ export default function Welcome({ auth }) {
             <Head title="Learning Management Repository" />
             <div className="relative bg-[#f9f9f9] text-black overflow-x-hidden font-poppins scroll-container">
                 {/* Navbar */}
-                <nav className="fixed top-0 left-0 w-full bg-white  z-50 py-4 px-8 flex items-center justify-around h-14">
+                <nav className="fixed top-0 left-0 w-full bg-white z-50 py-4 px-8 flex items-center justify-around h-14 overflow-hidden">
+                    {/* Blue Gradient Accent Background */}
+                    <div className="absolute top-0 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-blue-300 via-blue-400 to-blue-500 rounded-full blur-3xl opacity-30 z-0 animate-pulse-slow pointer-events-none" />
+                    <div className="absolute bottom-0 -right-20 w-[400px] h-[400px] bg-gradient-to-tr from-blue-100 to-blue-300 rounded-full blur-3xl opacity-40 z-0 pointer-events-none" />
+
                     <div className="w-3/6 flex items-center gap-2">
-                        <img src="logo/paul.png" alt="" className="h-10 w-12" />
+                        <img src="logo/psu.png" alt="" className="h-15 w-12" />
                     </div>
+
                     <div className="w-3/6 flex justify-center">
                         <ul className="flex space-x-12 text-gray-700 font-medium">
                             {["home", "features", "guide", "about"].map(
@@ -290,7 +316,7 @@ export default function Welcome({ auth }) {
                         ) : (
                             <Link
                                 href="/login"
-                                className="text-gray-700 px-4 py-2 font-medium transition"
+                                className="text-gray-700 px-4 py-2 font-medium transition cursor-pointer"
                             >
                                 Sign in
                             </Link>
@@ -308,21 +334,23 @@ export default function Welcome({ auth }) {
                     <div className="absolute bottom-0 -right-20 w-[400px] h-[400px] bg-gradient-to-tr from-blue-100 to-blue-300 rounded-full blur-3xl opacity-40 z-0" />
 
                     {/* Main Content */}
-                    <h1
+                    <motion.h1
                         id="hero-title"
-                        className="relative z-10 text-7xl font-semibold text-gray-800 mt-4 hero-title flex flex-wrap justify-center"
+                        className="relative z-10 text-7xl font-semibold text-gray-800 mt-4 flex flex-wrap justify-center"
+                        variants={container}
+                        initial="hidden"
+                        animate="visible"
                     >
-                        {`Enhancing Education with Our Interactive Learning System`
-                            .split(" ")
-                            .map((word, index) => (
-                                <span
-                                    key={index}
-                                    className="inline-block opacity-0 mr-2 word"
-                                >
-                                    {word}
-                                </span>
-                            ))}
-                    </h1>
+                        {sentence.split(" ").map((word, index) => (
+                            <motion.span
+                                key={index}
+                                className="inline-block mr-2"
+                                variants={wordAnimation}
+                            >
+                                {word}
+                            </motion.span>
+                        ))}
+                    </motion.h1>
 
                     <p className="relative z-10 title-description text-xl text-gray-600 font-medium max-w-2xl mt-3 opacity-0">
                         Easily access and manage learning materials in one
