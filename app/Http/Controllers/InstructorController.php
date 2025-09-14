@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\NewAssignmentNotification;
+use App\Notifications\StudentAddedToClass;
+use App\Notifications\StudentRemovedToClass;                                                               
 use App\Models\User;
 use App\Models\Thread;
 use App\Models\Material;
@@ -244,6 +246,9 @@ class InstructorController extends Controller
 
         $class->students()->syncWithoutDetaching($request->student_id);
 
+        $student = User::findOrFail($request->student_id);
+        $student->notify(new StudentAddedToClass($class));
+
         return response()->json([
             'success' => true,
             'class' => $class,
@@ -349,46 +354,46 @@ class InstructorController extends Controller
     }
 
     public function update(Request $request)
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    $request->validate([
-        'firstname' => 'required|string|max:255',
-        'middlename' => 'nullable|string|max:255',
-        'lastname' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $user->id,
-        'contact_number' => 'nullable|string|max:255',
-        'specialization' => 'nullable|string|max:255',
-        'bio' => 'nullable|string',
-        'profile_picture' => 'nullable|mimes:jpg,jpeg,png|max:4095',
-    ]);
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'contact_number' => 'nullable|string|max:255',
+            'specialization' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
+            'profile_picture' => 'nullable|mimes:jpg,jpeg,png|max:4095',
+        ]);
 
-    if ($request->hasFile('profile_picture')) {
-        $file = $request->file('profile_picture');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('profiles'), $filename);
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('profiles'), $filename);
 
-        $user->profile_picture = 'profiles/' . $filename;
+            $user->profile_picture = 'profiles/' . $filename;
+        }
+
+        $user->update($request->only([
+            'firstname',
+            'middlename',
+            'lastname',
+            'email',
+            'contact_number',
+            'specialization',
+            'bio',
+        ]));
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!',
+            'user' => $user,
+        ]);
     }
-
-    $user->update($request->only([
-        'firstname',
-        'middlename',
-        'lastname',
-        'email',
-        'contact_number',
-        'specialization',
-        'bio',
-    ]));
-
-    $user->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Profile updated successfully!',
-        'user' => $user,
-    ]);
-}
 
 
     // Classroom Members
@@ -414,5 +419,23 @@ class InstructorController extends Controller
             ->get(['id', 'firstname']);
 
         return response()->json($student);
+    }
+
+    public function removeStudent($classId, $studentId) 
+    {
+        $class = ClassModel::findOrFail($classId);
+        $student = User::findOrFail($studentId);
+
+        $class->students()->detach($student->id);
+
+        $student = User::findOrFail($studentId);
+        $student->notify(new StudentRemovedToClass($class));
+
+        return response()->json([
+            'message' => 'Student removed successfully',
+            'class_id' => $classId,
+            'student' => $studentId,
+        ]);
+        
     }
 }

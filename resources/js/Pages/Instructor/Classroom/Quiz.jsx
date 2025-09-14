@@ -39,6 +39,23 @@ export default function Quiz({ classId }) {
         return () => clearInterval(interval);
     }, [classId]);
 
+    useEffect(() => {
+        if (quizData.start_time && quizData.end_time) {
+            const start = new Date(quizData.start_time);
+            const end = new Date(quizData.end_time);
+
+            if (!isNaN(start) && !isNaN(end) && end > start) {
+                const diffMs = end - start;
+                const diffMins = Math.floor(diffMs / 60000);
+
+                setQuizData((prev) => ({
+                    ...prev,
+                    duration_minutes: diffMins,
+                }));
+            }
+        }
+    }, [quizData.start_time, quizData.end_time]);
+
     // handlers...
     const handleQuizInputChange = (e) =>
         setQuizData({ ...quizData, [e.target.name]: e.target.value });
@@ -205,7 +222,7 @@ export default function Quiz({ classId }) {
                     name="duration_minutes"
                     placeholder="Duration (minutes)"
                     value={quizData.duration_minutes}
-                    onChange={handleQuizInputChange}
+                    readOnly
                     className="w-full border rounded px-3 py-2"
                 />
 
@@ -349,6 +366,41 @@ export default function Quiz({ classId }) {
                                 </li>
                             ))}
                         </ol>
+                        <h4 className="font-semibold mb-2">Submissions</h4>{" "}
+                        {selectedQuiz.submissions &&
+                        selectedQuiz.submissions.length > 0 ? (
+                            <ul className="space-y-2">
+                                {" "}
+                                {selectedQuiz.submissions.map((submission) => (
+                                    <li
+                                        key={submission.id}
+                                        className="border rounded p-3 flex justify-between items-center"
+                                    >
+                                        {" "}
+                                        <span>
+                                            {" "}
+                                            {submission.student?.firstname ||
+                                                "Unknown Student"}{" "}
+                                        </span>{" "}
+                                        <span className="text-sm">
+                                            {" "}
+                                            Score:{" "}
+                                            <span className="font-bold">
+                                                {" "}
+                                                {submission.score ?? "-"} /{" "}
+                                                {selectedQuiz.questions
+                                                    ?.length || 0}{" "}
+                                            </span>{" "}
+                                        </span>{" "}
+                                    </li>
+                                ))}{" "}
+                            </ul>
+                        ) : (
+                            <div className="text-gray-500">
+                                {" "}
+                                No submissions yet.{" "}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

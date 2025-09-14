@@ -84,6 +84,7 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('/classroom/{id}/members', [InstructorController::class, 'getMembers']);
     Route::get('/students/search', [InstructorController::class, 'searchStudents']);
     Route::post('/instructor/{id}/add-member', [InstructorController::class, 'addStudentToClassroom']);
+    Route::delete('/classroom/{classId}/remove-student/{studentId}', [InstructorController::class, 'removeStudent']);
 });
 
 Route::post('/classroom/{classroom}/materials', [MaterialController::class, 'store'])->name('materials.store');

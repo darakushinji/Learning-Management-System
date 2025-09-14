@@ -142,13 +142,6 @@ export default function Classroom({
             { answers: studentAnswers },
             {
                 onSuccess: (page) => {
-                    // const { score, total } = page.props;
-                    // alert(
-                    //     `You got ${score} out of ${total} correct! (${(
-                    //         (score / total) *
-                    //         100
-                    //     ).toFixed(1)})`
-                    // );
                     setFinishQuizIds((prev) => [...prev, selectedQuiz.id]);
                     setSelectedQuiz(null);
                     setStudentAnswers({});
@@ -356,10 +349,11 @@ export default function Classroom({
                                 </ul>
                             )}
                             {selectedQuiz && (
-                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                                    <div className="bg-white p-6 rounded-lg max-w-2xl w-full shadow-lg overflow-y-auto max-h-[90vh]">
+                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-3xl p-8 overflow-y-auto max-h-[90vh]">
+                                        {/* Close Button */}
                                         <button
-                                            className="absolute top-4 right-4 text-gray-600 hover:text-red-500"
+                                            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
                                             onClick={() => {
                                                 setSelectedQuiz(null);
                                                 setStudentAnswers({});
@@ -367,17 +361,26 @@ export default function Classroom({
                                         >
                                             ✕
                                         </button>
-                                        <h2 className="text-xl font-bold text-purple-700 mb-4">
-                                            {selectedQuiz.title}
-                                        </h2>
 
+                                        {/* Header */}
+                                        <div className="border-b pb-4 mb-6">
+                                            <h2 className="text-2xl font-bold text-purple-700">
+                                                {selectedQuiz.title}
+                                            </h2>
+                                            <p className="text-gray-500">
+                                                {selectedQuiz.description}
+                                            </p>
+                                        </div>
+
+                                        {/* Timer */}
                                         {timeLeft !== null && (
-                                            <div className="mb-4 text-lg font-semibold text-red-600">
-                                                Time Remaining:{" "}
+                                            <div className="mb-6 text-lg font-semibold text-red-600 bg-red-100 rounded-lg px-4 py-2 inline-block">
+                                                ⏳ Time Remaining:{" "}
                                                 {formatTime(timeLeft)}
                                             </div>
                                         )}
 
+                                        {/* Questions */}
                                         <form
                                             onSubmit={(e) => {
                                                 e.preventDefault();
@@ -386,62 +389,76 @@ export default function Classroom({
                                             className="space-y-6"
                                         >
                                             {selectedQuiz.questions.map(
-                                                (question) => (
-                                                    <div key={question.id}>
-                                                        <p>
+                                                (question, idx) => (
+                                                    <div
+                                                        key={question.id}
+                                                        className="border rounded-lg p-4 bg-gray-50 shadow-sm"
+                                                    >
+                                                        <p className="font-medium text-gray-800 mb-3">
+                                                            {idx + 1}.{" "}
                                                             {
                                                                 question.question_text
                                                             }
                                                         </p>
-                                                        {question.choices.map(
-                                                            (choice) => (
-                                                                <label
-                                                                    key={
-                                                                        choice.label
-                                                                    }
-                                                                >
-                                                                    <input
-                                                                        type="radio"
-                                                                        name={`question_${question.id}`}
-                                                                        value={
+                                                        <div className="space-y-2">
+                                                            {question.choices.map(
+                                                                (choice) => (
+                                                                    <label
+                                                                        key={
                                                                             choice.label
                                                                         }
-                                                                        checked={
-                                                                            studentAnswers[
-                                                                                question
-                                                                                    .id
-                                                                            ] ===
-                                                                            choice.label
-                                                                        }
-                                                                        onChange={() =>
-                                                                            handleSelectChoice(
-                                                                                question.id,
+                                                                        className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-gray-100 transition"
+                                                                    >
+                                                                        <input
+                                                                            type="radio"
+                                                                            name={`question_${question.id}`}
+                                                                            value={
                                                                                 choice.label
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                    {
-                                                                        choice.label
-                                                                    }
-                                                                    .{" "}
-                                                                    {
-                                                                        choice.text
-                                                                    }
-                                                                </label>
-                                                            )
-                                                        )}
+                                                                            }
+                                                                            checked={
+                                                                                studentAnswers[
+                                                                                    question
+                                                                                        .id
+                                                                                ] ===
+                                                                                choice.label
+                                                                            }
+                                                                            onChange={() =>
+                                                                                handleSelectChoice(
+                                                                                    question.id,
+                                                                                    choice.label
+                                                                                )
+                                                                            }
+                                                                            className="text-purple-600 focus:ring-purple-500"
+                                                                        />
+                                                                        <span className="text-gray-700">
+                                                                            <span className="font-semibold">
+                                                                                {
+                                                                                    choice.label
+                                                                                }
+
+                                                                                .
+                                                                            </span>{" "}
+                                                                            {
+                                                                                choice.text
+                                                                            }
+                                                                        </span>
+                                                                    </label>
+                                                                )
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 )
                                             )}
 
+                                            {/* Submit */}
                                             <button
                                                 type="submit"
-                                                className={`bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded ${
+                                                className={`w-full py-3 rounded-lg font-semibold transition ${
                                                     finishedQuizIds.includes(
                                                         selectedQuiz.id
                                                     )
-                                                        ? "bg-gray-400 cursor-not-allowed"
-                                                        : ""
+                                                        ? "bg-gray-400 cursor-not-allowed text-white"
+                                                        : "bg-green-600 hover:bg-green-700 text-white shadow"
                                                 }`}
                                                 disabled={finishedQuizIds.includes(
                                                     selectedQuiz.id

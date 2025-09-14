@@ -56,6 +56,17 @@ export default function Members({ classId }) {
         }
     };
 
+    const handleRemoveStudent = async (studentId) => {
+        try {
+            await axios.delete(
+                `/classroom/${classId}/remove-student/${studentId}`
+            );
+            setStudents(students.filter((s) => s.id !== studentId));
+        } catch (error) {
+            console.error("Error removing student.", error);
+        }
+    };
+
     if (loading)
         return (
             <div className="text-gray-400 text-center py-8 animate-pulse">
@@ -99,9 +110,18 @@ export default function Members({ classId }) {
             {/* Instructor */}
             {instructor && (
                 <div className="flex items-center mb-4 p-3 bg-white rounded-xl shadow hover:shadow-md transition cursor-default">
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700">
-                        {instructor.firstname[0]}
-                    </div>
+                    {instructor?.profile_picture ? (
+                        <img
+                            src={`/${instructor.profile_picture}`}
+                            alt="profile"
+                            className="w-8 h-8 rounded-full mr-2 object-cover border"
+                        />
+                    ) : (
+                        <div className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center font-medium text-gray-700">
+                            {instructor.firstname[0]}
+                        </div>
+                    )}
+
                     <div className="ml-3">
                         <p className="text-sm text-gray-500">Instructor</p>
                         <h2 className="font-semibold text-gray-900">
@@ -117,21 +137,40 @@ export default function Members({ classId }) {
                     students.map((student) => (
                         <div
                             key={student.id}
-                            className="flex items-center p-3 bg-white rounded-xl shadow hover:shadow-md transition cursor-pointer"
+                            className="flex items-center p-3 bg-white rounded-xl shadow hover:shadow-md transition cursor-pointer justify-between"
                         >
-                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-medium text-gray-700">
-                                {student.firstname[0]}
+                            <div className="flex items-center">
+                                {student?.profile_picture ? (
+                                    <img
+                                        src={`/${student.profile_picture}`}
+                                        alt="profile"
+                                        className="w-8 h-8 rounded-full mr-2 object-cover border"
+                                    />
+                                ) : (
+                                    <div className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center font-medium text-gray-700">
+                                        {student.firstname[0]}
+                                    </div>
+                                )}
+
+                                <div className="ml-1 flex-1">
+                                    <h3 className="text-gray-900 font-medium">
+                                        {student.firstname} {student.lastname}
+                                    </h3>
+                                    <p className="text-xs text-gray-400">
+                                        Student
+                                    </p>
+                                </div>
                             </div>
-                            <div className="ml-3 flex-1">
-                                <h3 className="text-gray-900 font-medium">
-                                    {student.firstname} {student.lastname}
-                                </h3>
-                                <p className="text-xs text-gray-400">Student</p>
+                            <div>
+                                <button
+                                    onClick={() =>
+                                        handleRemoveStudent(student.id)
+                                    }
+                                    className="text-sm font-medium text-red-600 hover:text-red-700"
+                                >
+                                    Remove
+                                </button>
                             </div>
-                            <span
-                                className="w-3 h-3 rounded-full bg-green-400"
-                                title="Online"
-                            ></span>
                         </div>
                     ))
                 ) : (

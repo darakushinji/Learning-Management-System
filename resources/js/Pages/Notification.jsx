@@ -32,15 +32,120 @@ export default function Notification() {
         fetchNotifications();
     };
 
-    // Helper to determine notification type
+    // Detect notification type
     const getNotificationType = (notif) => {
-        if (notif.type && notif.type.includes("Assignment")) {
+        if (notif.type && notif.type.includes("Assignment"))
             return "assignment";
-        }
-        if (notif.type && notif.type.includes("SubmissionGraded")) {
+        if (notif.type && notif.type.includes("SubmissionGraded"))
             return "graded";
-        }
+        if (notif.type && notif.type.includes("StudentAddedToClass"))
+            return "student_added";
+        if (notif.type && notif.type.includes("StudentRemovedToClass"))
+            return "student_removed";
         return "material";
+    };
+
+    // Render notification content
+    const renderNotificationContent = (notif, type) => {
+        if (type === "graded") {
+            return (
+                <div>
+                    <p className="font-semibold text-lg text-green-800 flex items-center gap-2">
+                        <AcademicCapIcon className="h-5 w-5" />
+                        Submission graded!
+                    </p>
+                    <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
+                        <span>
+                            <span className="font-medium">Grade:</span>{" "}
+                            {notif.data.grade ?? "-"}
+                        </span>
+                        <span>
+                            <span className="font-medium">Feedback:</span>{" "}
+                            {notif.data.feedback ?? "-"}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+
+        if (type === "assignment") {
+            return (
+                <>
+                    <p className="font-semibold text-lg text-purple-800 flex items-center gap-2">
+                        <ClipboardDocumentListIcon className="h-5 w-5" />
+                        New assignment posted:{" "}
+                        <span className="text-black">{notif.data.title}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
+                        <span>
+                            <span className="font-medium">Class:</span>{" "}
+                            {notif.data.class_name}
+                        </span>
+                        <span>
+                            <span className="font-medium">Due date:</span>{" "}
+                            {new Date(notif.data.due_date).toLocaleString()}
+                        </span>
+                    </div>
+                </>
+            );
+        }
+
+        if (type === "student_added") {
+            return (
+                <div>
+                    <p className="font-semibold text-lg text-blue-800 flex items-center gap-2">
+                        <BellIcon className="h-5 w-5" />
+                        You’ve been added to{" "}
+                        <span className="text-black">
+                            {notif.data.class_name}
+                        </span>
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Added at:{" "}
+                        {new Date(notif.data.added_at).toLocaleString()}
+                    </p>
+                </div>
+            );
+        }
+
+        if (type === "student_removed") {
+            return (
+                <div>
+                    <p className="font-semibold text-lg text-blue-800 flex items-center gap-2">
+                        <BellIcon className="h-5 w-5" />
+                        You’ve been removed from{" "}
+                        <span className="text-black">
+                            {notif.data.class_name}
+                        </span>
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Removed at:{" "}
+                        {new Date(notif.data.removed_at).toLocaleString()}
+                    </p>
+                </div>
+            );
+        }
+
+        // Default → material
+        return (
+            <>
+                <p className="font-semibold text-lg text-purple-800 flex items-center gap-2">
+                    <BellIcon className="h-5 w-5" />
+                    New material uploaded:{" "}
+                    <span className="text-black">{notif.data.title}</span>
+                </p>
+                <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
+                    <span>
+                        <span className="font-medium">Class:</span>{" "}
+                        {notif.data.class_name}
+                    </span>
+                    <span>
+                        <span className="font-medium">Uploaded at:</span>{" "}
+                        {new Date(notif.data.uploaded_at).toLocaleString()}
+                    </span>
+                </div>
+            </>
+        );
     };
 
     return (
@@ -50,6 +155,7 @@ export default function Notification() {
                     <BellIcon className="h-8 w-8 text-purple-600" />
                     <h1 className="text-3xl font-bold">Notifications</h1>
                 </div>
+
                 {loading ? (
                     <div className="flex justify-center items-center h-32">
                         <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></span>
@@ -74,70 +180,9 @@ export default function Notification() {
                                     }`}
                                 >
                                     <div className="flex-1">
-                                        {type === "graded" ? (
-                                            <div>
-                                                <p className="font-semibold text-lg text-green-800 flex items-center gap-2">
-                                                    <AcademicCapIcon className="h-5 w-5" />
-                                                    Submission graded!
-                                                </p>
-                                                <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
-                                                    <span>
-                                                        <span className="font-medium">
-                                                            Grade:
-                                                        </span>{" "}
-                                                        {notif.data.grade ??
-                                                            "-"}
-                                                    </span>
-                                                    <span>
-                                                        <span className="font-medium">
-                                                            Feedback:
-                                                        </span>{" "}
-                                                        {notif.data.feedback ??
-                                                            "-"}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <p className="font-semibold text-lg text-purple-800 flex items-center gap-2">
-                                                    {type === "assignment" ? (
-                                                        <ClipboardDocumentListIcon className="h-5 w-5" />
-                                                    ) : (
-                                                        <BellIcon className="h-5 w-5" />
-                                                    )}
-                                                    {type === "assignment"
-                                                        ? "New assignment posted: "
-                                                        : "New material uploaded: "}
-                                                    <span className="text-black">
-                                                        {notif.data.title}
-                                                    </span>
-                                                </p>
-                                                <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
-                                                    <span>
-                                                        <span className="font-medium">
-                                                            Class:
-                                                        </span>{" "}
-                                                        {notif.data.class_name}
-                                                    </span>
-                                                    <span>
-                                                        <span className="font-medium">
-                                                            {type ===
-                                                            "assignment"
-                                                                ? "Due date:"
-                                                                : "Uploaded at:"}
-                                                        </span>{" "}
-                                                        {type === "assignment"
-                                                            ? new Date(
-                                                                  notif.data.due_date
-                                                              ).toLocaleString()
-                                                            : new Date(
-                                                                  notif.data.uploaded_at
-                                                              ).toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            </>
-                                        )}
+                                        {renderNotificationContent(notif, type)}
                                     </div>
+
                                     {!notif.read_at ? (
                                         <button
                                             onClick={() => markAsRead(notif.id)}
